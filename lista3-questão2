@@ -1,0 +1,57 @@
+/*
+---------------------------------------------------------
+Método da Bisseção
+Aluno: Isadora Luisa Candini Marques
+RA: 10730955
+Disciplina: Algoritmos Numéricos
+---------------------------------------------------------
+*/
+
+#include <stdio.h>
+#include <math.h>
+
+// Função f(x) = log10(x^2 + 1) - (x - 6)^2 + 3
+double f(double x) {
+    return log10(x*x + 1.0) - (x - 6.0)*(x - 6.0) + 3.0;
+}
+
+int main(void) {
+    double a = 3.0, b = 4.0;        // intervalo inicial
+    const double eps = 0.1;          // erro admissível
+    const int itmax = 100;           // limite de iterações
+    double fa = f(a), fb = f(b);
+
+    // Verifica se há troca de sinal no intervalo
+    if (fa * fb > 0.0) {
+        printf("Nao ha troca de sinal em [%.4f, %.4f].\n", a, b);
+        return 0;
+    }
+
+    printf("Iter |      A      B      M=(A+B)/2      f(M)     (B-A)/2\n");
+    printf("-----+-----------------------------------------------------\n");
+
+    int it = 0;
+    while ( (b - a)/2.0 > eps && it < itmax ) {
+        double m  = (a + b) / 2.0;
+        double fm = f(m);
+
+        printf("%4d | %7.4f %7.4f %12.4f %10.4f %10.4f\n",
+               ++it, a, b, m, fm, (b-a)/2.0);
+
+        // Mantém o subintervalo onde há troca de sinal
+        if (fa * fm <= 0.0) {
+            b  = m;
+            fb = fm;
+        } else {
+            a  = m;
+            fa = fm;
+        }
+    }
+
+    double xstar = (a + b) / 2.0;
+    double erro_max = (b - a) / 2.0;
+
+    printf("\nAproximacao da raiz: x = %.4f\n", xstar);
+    printf("Erro maximo (B-A)/2 = %.4f\n", erro_max);
+    return 0;
+}
