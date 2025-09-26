@@ -1,0 +1,73 @@
+/*
+---------------------------------------------------------
+Metodo da Bissecao - Exercicio 3
+Aluno: Isadora Luisa Candini Marques
+RA: 10730955
+Objetivo: Encontrar t tal que C(t) = 7.2 (mg/L)
+Intervalo inicial: [3.3, 3.5] horas
+Erro admissivel: 0.1 hora (6 minutos)
+---------------------------------------------------------
+*/
+
+#include <stdio.h>
+#include <math.h>
+
+// C(t) = -log10(t^3 + 5) - (log10(t - 3))^2 + 9
+double C(double t) {
+    return -log10(t*t*t + 5.0) - pow(log10(t - 3.0), 2.0) + 9.0;
+}
+
+// f(t) = C(t) - 7.2  -> queremos f(t) = 0
+double f(double t) {
+    return C(t) - 7.2;
+}
+
+int main(void) {
+    double a = 3.3, b = 3.5;     // intervalo inicial (horas)
+    const double eps = 0.1;      // 0.1 h = 6 minutos
+    const int itmax = 100;
+
+    // checagem básica de dominio: t > 3
+    if (a <= 3.0 || b <= 3.0) {
+        printf("Intervalo invalido: t deve ser > 3.0\n");
+        return 0;
+    }
+
+    double fa = f(a), fb = f(b);
+    if (fa * fb > 0.0) {
+        printf("Nao ha troca de sinal em [%.3f, %.3f].\n", a, b);
+        return 0;
+    }
+
+    printf("Iter |     A      B     M=(A+B)/2     f(M)     (B-A)/2\n");
+    printf("-----+--------------------------------------------------\n");
+
+    int it = 0;
+    while ( (b - a)/2.0 > eps && it < itmax ) {
+        double m  = (a + b) / 2.0;
+        double fm = f(m);
+
+        printf("%4d | %7.3f %7.3f %12.3f %9.3f %10.3f\n",
+               ++it, a, b, m, fm, (b-a)/2.0);
+
+        if (fa * fm <= 0.0) {
+            b  = m; fb = fm;
+        } else {
+            a  = m; fa = fm;
+        }
+    }
+
+    double tstar = (a + b) / 2.0;      // aproximacao
+    double erro_max = (b - a) / 2.0;   // erro maximo em horas
+
+    // converter horas para hh:mm (arredondando minutos)
+    int horas = (int)floor(tstar);
+    int minutos = (int)round((tstar - horas) * 60.0);
+    if (minutos == 60) { horas += 1; minutos = 0; }
+
+    printf("\nTempo aproximado: t = %.3f h\n", tstar);
+    printf("Erro maximo (B-A)/2 = %.3f h (<= 0.100 h)\n", erro_max);
+    printf("Formato hh:mm -> %02d:%02d\n", horas, minutos);
+
+    return 0;
+}
